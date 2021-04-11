@@ -1,23 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import {useState} from "react";
+import HomePage from "./HomePage/HomePage"
+import {Route} from "react-router-dom";
+import Buttons from "./HomePage/Buttons";
 
 function App() {
+  const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState([]);
+  const [count, setCount] = useState(0);
+  const [score, setScore] = useState(0);
+  const BASE_URL = `https://opentdb.com/api.php?amount=10&category=`;
+  
+  function handleClick({target}) {
+    fetch(`${BASE_URL}${target.value}&difficulty=easy`)
+    .then((response) => response.json())
+    .then((data) => {
+      setQuestions(data.results);
+    })
+    .catch(err=>console.log(err));
+  }
+
+  function handleAnswerClick({target}) {
+    setScore((currentScore) => currentScore + target.value);
+    if (count < 10) {
+      setCount((currentCount) => currentCount+1);
+    }
+  }
+
+  
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Route path="/">
+       <HomePage handleClick={handleClick} />  
+      </Route>
     </div>
   );
 }
